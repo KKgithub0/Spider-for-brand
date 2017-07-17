@@ -7,4 +7,5 @@ You need to be familiar with CCS, JavaScript, HTML, and some XPath syntax relate
 taobao_spider.py is a simple spider on taobao.com, it's mission is to grasp all categories on homepage.
 jingdong_spider.py is a simple spider on jd.com, it's mission is to grasp all categories on homepage.
 58_spider.py aimes to grasp some companies of 58 local training institutions.
+autohome_spider.py is a spider on autohome.com, grasp car brand with selected type and price.
 
