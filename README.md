@@ -8,4 +8,5 @@ taobao_spider.py is a simple spider on taobao.com, it's mission is to grasp all 
 jingdong_spider.py is a simple spider on jd.com, it's mission is to grasp all categories on homepage.
 58_spider.py aimes to grasp some companies of 58 local training institutions.
 autohome_spider.py is a spider on autohome.com, grasp car brand with selected type and price.
+quna_hotel_spider.py grasps all hotel brand in beijing at different star degree. To be continued.
 
