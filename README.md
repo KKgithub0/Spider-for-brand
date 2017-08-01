@@ -19,3 +19,5 @@ autohome_spider.py is a spider on autohome.com, grasp car brand with selected ty
 quna_hotel_spider.py grasps all hotel brand in beijing at different star degree. To be continued.
 
 mbaidu_spider.py grasps m.baidu.com, finds related recommentation and grasp its brand logo and description. This version contains time controller and multithreads because of it's a scale task.
+
+china10.py grasps www.china-10.com.
