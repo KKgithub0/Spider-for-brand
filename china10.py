@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 import json
+import threading
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -14,23 +15,21 @@ def get_trade_url(url):
     except:
         pass
     finally:
-        trade_url = dict()
         trade_nodes = driver.find_elements_by_xpath('//*[@id="conmenu"]/li')
         i = 1
-#        print len(trade_nodes)
         for node in trade_nodes:
+            trade_url = list()
             ActionChains(driver).move_to_element(node).perform()
             elements = driver.find_elements_by_xpath('//*[@id="conmenu"]/li[%s]/div/ul/li/a' % str(i))
-#            print i
             i += 1
             for ele in elements:
                 herf = ele.get_attribute('href')
                 title = ele.get_attribute('title')
-                trade_url[title] = herf 
-#                print title
-        return trade_url              
+                trade_url.append(title + '|' + herf)
+            arg = '\t'.join(trade_url)
+            thread_list.append(threading.Thread(target = spider, args = (arg,)))
 
-def get_detail(k, url):
+def get_detail(driver, k, url):
     try:
         driver.get(url)
     except:
@@ -42,12 +41,11 @@ def get_detail(k, url):
             for node in nodes:
                 herf = node.get_attribute('href')
                 detail_dic[node.text] = herf
-#                print node.text
         except:
             detail_dic[k] = url
         return detail_dic
 
-def get_brand(trade, url):
+def get_brand(driver, trade, url, brand_url):
     try:
         driver.get(url)
     except:
@@ -55,19 +53,29 @@ def get_brand(trade, url):
     finally:
         try:
             res = list()
-            nodes = driver.find_elements_by_xpath('//*[@id="top10"]/div/div[2]/dl/dt/a[1]')
-            for node in nodes:
-                res.append(node.get_attribute('title'))
-                brand_url[node.get_attribute('title')] = node.get_attribute('href')
-            nodes = driver.find_elements_by_xpath('//*[@id="rightlay"]/div[3]/div[1]/div[2]/a')
-            for node in nodes:
-                res.append(node.get_attribute('title'))
-                brand_url[node.get_attribute('title')] = node.get_attribute('href')
+            try:
+                nodes = driver.find_elements_by_xpath('//*[@id="top10"]/div/div[2]/dl/dt/a[1]')
+                for node in nodes:
+                    res.append(node.get_attribute('title'))
+                    brand_url[node.get_attribute('title')] = node.get_attribute('href')
+            except:
+                pass
+            try:
+                nodes = driver.find_elements_by_xpath('//*[@id="rightlay"]/div[3]/div[1]/div[2]/a')
+                for node in nodes:
+                    res.append(node.get_attribute('title'))
+                    brand_url[node.get_attribute('title')] = node.get_attribute('href')
+            except:
+                pass
+
+            threadLock.acquire()
             trade_brand_file.write(trade + '\t' + '|'.join(res) + '\n')
+            threadLock.release()
         except:
+            print trade + '\tget top brand error'
             pass
  
-def get_info(k, url):
+def get_info(driver, k, url):
     info_dic = dict()
     try:
         driver.get(url)
@@ -76,20 +84,31 @@ def get_info(k, url):
     finally:
         try:
             driver.find_element_by_xpath('//*[@id="rightlay"]/div[2]/div[1]/div[2]/div[3]/a[contains(text(),"更多品牌介绍")]').click()
+        except:
+            pass
+        try:
             desc = ''
             nodes = driver.find_elements_by_xpath('//*[@id="rightlay"]/div[2]/div[1]/div[2]/div[2]/p')
             for node in nodes:
-        #        print node.text
-                desc += node.text
+                desc += node.text.strip()
             info_dic['desc'] = desc
+        except:
+            info_dic['desc'] = 'unknown'
+        try:
             img_node = driver.find_element_by_xpath('//*[@id="infobox"]/div/div[2]/div/div[1]/div[1]/div[1]/a/div/img')
             info_dic['img'] = img_node.get_attribute('src')
+        except:
+            info_dic['img'] = 'unknown'
+        try:
             intro_node = driver.find_element_by_xpath('//*[@id="infobox"]/div/div[2]/div/div[1]/div[1]/div[2]/div')
-            info_dic['introduce'] = intro_node.text
+            info_dic['introduce'] = intro_node.text.strip()
+        except:
+            info_dic['introduce'] = 'unknow'
+        info_list = ['Concern Index', 'Birthplace', 'AdWords', 'Official Website', 'Tel', 'Brand Website', 'Top10 Brand']
+        for item in info_list:
+            info_dic[item] = 'Unknown'
+        try:
             detail_node = driver.find_elements_by_xpath('//*[@id="infobox"]/div/div[2]/div/div[1]/ul/li')
-            info_list = ['Concern Index', 'Birthplace', 'AdWords', 'Official Website', 'Tel', 'Brand Website', 'Top10 Brand']
-            for item in info_list:
-                info_dic[item] = 'Unknown'
             for node in detail_node:
                 arr = node.text.strip().split('：')
                 if len(arr) != 2:
@@ -114,39 +133,62 @@ def get_info(k, url):
                         info_dic['Brand Website'] = arr[1]
                     else:
                         continue
-            brand_info_file.write(k + '\t' + json.dumps(info_dic, ensure_ascii=False) + '\n')
         except:
             pass
-       
-if __name__ == '__main__':
-    driver = webdriver.Chrome('/Users/xuyikai/Downloads/chromedriver')
-    count = 0
+        threadLock.acquire()
+        brand_info_file.write(k + '\t' + json.dumps(info_dic, ensure_ascii=False) + '\n')
+        threadLock.release()
+
+def spider(arg):
     print time.strftime("%Y-%m-%d %H:%M:%S")
- #   driver = webdriver.PhantomJS('/Users/xuyikai/phantomjs')
-    driver.implicitly_wait(10)
-    driver.set_page_load_timeout(10)
-    driver.set_script_timeout(10)
- #   res_file = open('/Users/xuyikai/Downloads/work/spider/brand/mbaidu_brand.txt' ,'w')
-
-    trade_brand_file = open('/Users/xuyikai/Downloads/work/spider/brand/china_trade_brand.txt' ,'w')
-    brand_info_file = open('/Users/xuyikai/Downloads/work/spider/brand/china_brand_detail.txt' ,'w')
-    url = 'http://www.china-10.com/'
-    trade_brand = dict()
-    brand_url = dict()
-    brand_info = dict()
-    trade_url = get_trade_url(url)
-    for k, v in trade_url.iteritems():
-        trade_url[k] = get_detail(k, v)
-     
-
-    for key, value in trade_url.iteritems():
-        for k, v in value.iteritems():
+    print '    -----start....' 
+    trade_dic = dict()
+    fields = arg.split('\t')
+    for field in fields:
+        arr = field.split('|')
+        if len(arr) != 2:
+            continue
+        trade_dic[arr[0]] = arr[1]
+#    print len(trade_dic)
+    driver = webdriver.PhantomJS('./phantomjs')
+    driver.implicitly_wait(5)
+    driver.set_page_load_timeout(5)
+    driver.set_script_timeout(5)
+    for key, value in trade_dic.iteritems():
+        dic = get_detail(driver, key, value)
+        print time.strftime("%Y-%m-%d %H:%M:%S")
+        print '%s    -----processing --trade....' % key
+        brand_url = dict()
+        for k, v in dic.iteritems():
             trade = key + '/' + k
-            get_brand(trade, v)
- #           trade_brand[trade] = brand
-    for k, v in brand_url.iteritems():
-        get_info(k, v)
+            get_brand(driver, trade, v, brand_url)
+        for k, v in brand_url.iteritems():
+            get_info(driver, k, v)
+    print time.strftime("%Y-%m-%d %H:%M:%S")
+    print '    -----end....' 
+    driver.quit()
 
+if __name__ == '__main__':
+#    driver = webdriver.Chrome('/Users/xuyikai/Downloads/chromedriver')
+    print time.strftime("%Y-%m-%d %H:%M:%S")
+    driver = webdriver.PhantomJS('./phantomjs')
+    driver.implicitly_wait(5)
+    driver.set_page_load_timeout(5)
+    driver.set_script_timeout(5)
+
+    trade_brand_file = open('./china_trade_brand.txt' ,'w')
+    brand_info_file = open('./china_brand_detail.txt' ,'w')
+    url = 'http://www.china-10.com/'
+    threadLock = threading.Lock()
+    thread_list = list()
+    trade_url = get_trade_url(url)
+
+    for t in thread_list:
+        t.setDaemon(True)
+        t.start()
+    for t in thread_list:
+        t.join()
+     
     print time.strftime("%Y-%m-%d %H:%M:%S")
     trade_brand_file.close()
     brand_info_file.close()
