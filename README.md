@@ -20,4 +20,4 @@ quna_hotel_spider.py grasps all hotel brand in beijing at different star degree.
 
 mbaidu_spider.py grasps m.baidu.com, finds related recommentation and grasp its brand logo and description. This version contains time controller and multithreads because of it's a scale task.
 
-china10.py grasps www.china-10.com.
+china10.py grasps www.china-10.com. To to improved by multithread.
