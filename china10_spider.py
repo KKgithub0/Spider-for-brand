@@ -91,22 +91,22 @@ def get_info(driver, k, url):
             nodes = driver.find_elements_by_xpath('//*[@id="rightlay"]/div[2]/div[1]/div[2]/div[2]/p')
             for node in nodes:
                 desc += node.text.strip()
-            info_dic['desc'] = desc
+            info_dic['Desc'] = desc
         except:
-            info_dic['desc'] = 'unknown'
+            info_dic['Desc'] = 'unknown'
         try:
             img_node = driver.find_element_by_xpath('//*[@id="infobox"]/div/div[2]/div/div[1]/div[1]/div[1]/a/div/img')
-            info_dic['img'] = img_node.get_attribute('src')
+            info_dic['Img'] = img_node.get_attribute('src')
         except:
-            info_dic['img'] = 'unknown'
+            info_dic['Img'] = 'unknown'
         try:
             intro_node = driver.find_element_by_xpath('//*[@id="infobox"]/div/div[2]/div/div[1]/div[1]/div[2]/div')
-            info_dic['introduce'] = intro_node.text.strip()
+            info_dic['Introduce'] = intro_node.text.strip()
         except:
-            info_dic['introduce'] = 'unknow'
+            info_dic['Introduce'] = 'unknown'
         info_list = ['Concern Index', 'Birthplace', 'AdWords', 'Official Website', 'Tel', 'Brand Website', 'Top10 Brand']
         for item in info_list:
-            info_dic[item] = 'Unknown'
+            info_dic[item] = 'unknown'
         try:
             detail_node = driver.find_elements_by_xpath('//*[@id="infobox"]/div/div[2]/div/div[1]/ul/li')
             for node in detail_node:
@@ -117,20 +117,20 @@ def get_info(driver, k, url):
                         top_node = driver.find_elements_by_xpath('//*[@id="infobox"]/div/div[2]/div/div[1]/ul/li/a[contains(@title,"十大品牌")]')
                         for ele in top_node:
                             top.append(ele.text.strip('>>'))
-                        info_dic['Top10 Brand'] = '|'.join(top)
+                        info_dic['Top10Brand'] = '|'.join(top)
                 else:
                     if '关注指数' in arr[0]:
-                        info_dic['Concern Index'] = arr[1]
+                        info_dic['ConcernIndex'] = arr[1]
                     elif '发源地' in arr[0]:
                         info_dic['Birthplace'] = arr[1]
                     elif '广告词' in arr[0]:
                         info_dic['AdWords'] = arr[1]
                     elif '企业官网' in arr[0]:
-                        info_dic['Official Website'] = arr[1]
+                        info_dic['OfficialWebsite'] = arr[1]
                     elif '电话' in arr[0]:
                         info_dic['Tel'] = arr[1]
                     elif '品牌官网' in arr[0]:
-                        info_dic['Brand Website'] = arr[1]
+                        info_dic['BrandWebsite'] = arr[1]
                     else:
                         continue
         except:
