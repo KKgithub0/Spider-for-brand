@@ -1,5 +1,6 @@
 # Spider-for-brand
-simple spider based on selenium a
+simple spider based on selenium
+
 这个文件夹包含了一些爬虫实现爬取网页内容的Python脚本，包括爬出静态内容和异步请求的内容（Ajax），对于静态内容直接调用Python内部的urllib2库配合etree中的xpath语句可以解决大部分问题，对于动态网页，可以用模拟浏览器的方式来获取想要获取的内容，Python有一个selenium的库可以实现模拟浏览器的功能，文件夹里的爬虫脚本基本都是基于selenium包。
 
 summary文件，包含了配置爬虫环境教程，以及一些我自己安装过程中碰到的问题以及解决方法。
