@@ -9,6 +9,9 @@ Hi，last few days I had some demands of grasp at some website, so I learned the
 You need to be familiar with CSS, JavaScript, HTML, and some XPath syntax related knowledge, and you need to know about selenium's API.
 编写爬虫之前需要了解一些关于网页的基础知识，css/javascript/html，xpath是解析网页的利器，需要了解，selenium的一些接口函数也需要知道。
 
+http://selenium-python.readthedocs.io/api.html
+seleniumAPI的官网
+
 After few websites I had parsed, it is difficult to implement a versatile crawler to satisfy the crawl requirement. Every website has its distinct source code. So it's a good idea to complete a versatile crawler to parse all site! But I don't know how to do yet.
 要编写一个通用性的爬虫很困难，目前我的水平只限于对各个网页逐一分析，对于任务量比较大爬取任务，考虑用多线程或多进程来并行处理。
 
