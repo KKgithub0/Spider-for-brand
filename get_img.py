@@ -9,6 +9,9 @@ reload(sys)
 sys.setdefaultencoding('gbk')
 outdir = '/Users/xuyikai/Downloads/work/img/all_pic/'
 logfile = open('/Users/xuyikai/Downloads/work/img/log','w')
+
+#当爬出的服务器有反爬虫机制时，可以包装url请求的header，来伪装成浏览器规避反爬机制，其实反爬机制大多是判断请求是否有一些正常访问时应该携带的信息，
+#包括cookie，浏览器信息等信息，当使用urllib库时，并不携带这些信息，所以可以判断为爬虫，同时也要判断一下访问服务器的同一ip的访问频率
 my_headers=[
     "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36",
